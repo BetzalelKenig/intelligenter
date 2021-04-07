@@ -5,4 +5,6 @@ const router = express.Router();
 
 router.get('/get', controller.domainInfo);
 
+
+
 export = router;

@@ -3,7 +3,6 @@
  */
 
 import http from 'http';
-import bodyParser from 'body-parser';
 import express from 'express';
 import logging from './config/logging';
 import config from './config/config';
@@ -12,10 +11,6 @@ import domainInfo from './routes/intelligenter';
 
 const NAMESPACE = 'Server';
 const router = express();
-
-/** Parse the body of the request */
-// router.use(bodyParser.urlencoded({ extended: true }));
-// router.use(bodyParser.json());
 
 /** Rules of our API */
 router.use((req, res, next) => {
