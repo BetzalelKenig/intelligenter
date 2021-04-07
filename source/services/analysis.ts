@@ -1,4 +1,5 @@
 const nvt = require('node-virustotal');
+import config from '../config/config';
 
 const defaultTimedInstance = nvt.makeAPI();
 const timedInstance = defaultTimedInstance.setKey(process.env.VTAPIKEY);
