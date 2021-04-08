@@ -1,14 +1,14 @@
 /**validation & serialization service*/
 
 /**
- * 
- * @param url 
- * @returns 
+ *
+ * @param url
+ * @returns
  */
-
 
 const exstractDomain = (url: string) => {
     let hostname;
+    if (!url) return '';
     //find & remove protocol (http, ftp, etc.) and get hostname
     if (url.indexOf('//') > -1) {
         hostname = url.split('/')[2];
@@ -20,4 +20,6 @@ const exstractDomain = (url: string) => {
     //find & remove "?"
     hostname = hostname.split('?')[0];
     return hostname;
-}
+};
+
+export default exstractDomain;

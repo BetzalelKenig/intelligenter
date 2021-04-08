@@ -7,6 +7,7 @@ const nvt = require('node-virustotal');
 const whois = require('whois');
 import config from '../config/config';
 import logging from '../config/logging';
+import db from '../db/domain_querys';
 
 const NAMESPACE = 'AnalysisService';
 
@@ -14,7 +15,7 @@ const NAMESPACE = 'AnalysisService';
 const onAnalysis: string[] = [];
 
 /**check if domain is in onAnalysis array */
-const isOnAnalysis = (domain: string): boolean => {
+export const isOnAnalysis = (domain: string): boolean => {
     return onAnalysis.includes(domain);
 };
 
@@ -44,23 +45,27 @@ const whoisScan = (domain: string) => {
                 logging.error(NAMESPACE, err);
                 reject(err);
             }
-            resolve(JSON.parse(data));
+
+            resolve({ whoisdata: data });
         });
     });
 };
 
-const analyzeDomain = (domain: string) => {
+export const analyzeDomain = (domain: string) => {
     onAnalysis.push(domain);
 
-
-    return whoisScan(domain);
+    whoisScan(domain)
+        .then((data) => {
+            db.addWhoisData(domain, data as string);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 };
 
 /**  */
 const getDomainInfo = (domain: string) => {
     if (isOnAnalysis(domain)) {
         return { domain, status: 'onAnalysis' };
-    } else if(domain) return '';
+    } else if (domain) return '';
 };
-
-export default { analyzeDomain };

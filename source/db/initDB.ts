@@ -15,7 +15,6 @@ module.exports = {
             } else {
                 console.log('connect to database');
             }
-            console.log(err, res);
             client.end();
         });
     },

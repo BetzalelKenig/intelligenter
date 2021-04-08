@@ -19,31 +19,45 @@ const dbQuery = (query: { text: string; values: string[] }) => {
                 resolve(res);
             }
         });
-    }).finally(client.end());
+    })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(client.end());
 };
 
-module.exports = {
+const db = {
     addVTData: (domain: string, vtData: string) => {
         const date = new Date().toJSON().slice(0, 10);
         const query = {
             text: 'INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES($1, $2, $3) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = date',
             values: [domain, vtData, date]
         };
-        dbQuery(query);
+        return dbQuery(query);
+    },
+    addWhoisData: (domain: string, vtData: string) => {
+        const date = new Date().toJSON().slice(0, 10);
+        const query = {
+            text: 'INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES($1, $2, $3) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = date',
+            values: [domain, vtData, date]
+        };
+        return dbQuery(query);
     },
     isDomainInDB: (domain: string) => {
         const query = {
             text: 'SELECT exists(SELECT 1 FROM analysisdata WHERE $1)',
             values: [domain]
         };
-        dbQuery(query);
+        return dbQuery(query);
     },
     getDomainData: (domain: string) => {
         const query = {
             text: 'SELECT * FROM analysisdata WHERE $1 = domain',
             values: [domain]
         };
-        dbQuery(query);
+        return dbQuery(query);
     },
     findOldUpdates: (domain: string) => {}
 };
+
+export default db;
