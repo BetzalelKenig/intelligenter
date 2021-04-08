@@ -21,9 +21,15 @@
 -   get virustotal data & get whois data
 -   check if domain onAnalysis
 
-#### Get flow:
+#### GET request flow:
 
-1. check if onAnalysis if yes return onAnalysis. q: even if is in db?🤔 in not continue
+1. check if onAnalysis if yes return onAnalysis. q: even if is in db?🤔 if not continue
+2. if not onAnalysis check if domain exist in db if exist return data if not return onAnalysis & send to analysis
+
+#### POST request flow:
+
+1. check if onAnalysis if yes return onAnalysis & done
+2. if not onAnalysis check if exist on db return domain alrady exist else send to analysis & return onAnalysis
 
 ---
 

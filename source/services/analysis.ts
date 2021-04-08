@@ -6,25 +6,29 @@
 const nvt = require('node-virustotal');
 const whois = require('whois');
 import config from '../config/config';
+import logging from '../config/logging';
+
+const NAMESPACE = 'AnalysisService';
 
 /**Array for domains that on analysis*/
 const onAnalysis: string[] = [];
 
 /**check if domain is in onAnalysis array */
-const isOnAnalysis = (url: string): boolean => {
-    return onAnalysis.includes(url);
+const isOnAnalysis = (domain: string): boolean => {
+    return onAnalysis.includes(domain);
 };
 
 // create node-virustotal object. the free api is limited for four requests in minute
 const defaultTimedInstance = nvt.makeAPI();
 const timedInstance = defaultTimedInstance.setKey(process.env.VTAPIKEY);
 
-const virustotalScan = (url: string) => {
+const virustotalScan = (domain: string) => {
     return new Promise((resolve, reject) => {
-        timedInstance.domainLookup(url, (err: any, res: any) => {
+        timedInstance.domainLookup(domain, (err: any, res: any) => {
             if (err) {
                 console.log('Well, crap.');
-                console.error(err);
+                logging.error(NAMESPACE, err);
+
                 reject(err);
             }
             resolve(JSON.parse(res));
@@ -32,12 +36,12 @@ const virustotalScan = (url: string) => {
     });
 };
 
-const whoisScan = (url: string) => {
+const whoisScan = (domain: string) => {
     return new Promise((resolve, reject) => {
         whois.lookup('google.com', (err: any, data: any) => {
             if (err) {
                 console.log('Well, crap.');
-                console.error(err);
+                logging.error(NAMESPACE, err);
                 reject(err);
             }
             resolve(JSON.parse(data));
@@ -45,4 +49,7 @@ const whoisScan = (url: string) => {
     });
 };
 
-export default { virustotalScan };
+const analyzeDomain = (domain: string) =>{
+   return whoisScan(domain);
+}
+export default { analyzeDomain };
