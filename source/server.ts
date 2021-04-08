@@ -8,9 +8,13 @@ import logging from './config/logging';
 import config from './config/config';
 import sanityCheck from './routes/check';
 import domainInfo from './routes/intelligenter';
+const db = require('./db/initDB');
 
 const NAMESPACE = 'Server';
 const router = express();
+
+//  connect to database();
+db.connection();
 
 /** Rules of our API */
 router.use((req, res, next) => {

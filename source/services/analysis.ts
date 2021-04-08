@@ -38,7 +38,7 @@ const virustotalScan = (domain: string) => {
 
 const whoisScan = (domain: string) => {
     return new Promise((resolve, reject) => {
-        whois.lookup('google.com', (err: any, data: any) => {
+        whois.lookup(domain, (err: any, data: any) => {
             if (err) {
                 console.log('Well, crap.');
                 logging.error(NAMESPACE, err);
@@ -49,7 +49,18 @@ const whoisScan = (domain: string) => {
     });
 };
 
-const analyzeDomain = (domain: string) =>{
-   return whoisScan(domain);
-}
+const analyzeDomain = (domain: string) => {
+    onAnalysis.push(domain);
+
+
+    return whoisScan(domain);
+};
+
+/**  */
+const getDomainInfo = (domain: string) => {
+    if (isOnAnalysis(domain)) {
+        return { domain, status: 'onAnalysis' };
+    } else if(domain) return '';
+};
+
 export default { analyzeDomain };

@@ -6,6 +6,7 @@
 
 -   maybe convert https://www.google.com/ to google.com?🤔
 -   check if need Sanitization, validator.js🤔
+-   whois need only main domain
 
 ### Domain status
 
@@ -23,7 +24,7 @@
 
 #### GET request flow:
 
-1. check if onAnalysis if yes return onAnalysis. q: even if is in db?🤔 if not continue
+1. check if the domain status is onAnalysis if yes return onAnalysis. q: even if is in db?🤔 if not continue
 2. if not onAnalysis check if domain exist in db if exist return data if not return onAnalysis & send to analysis
 
 #### POST request flow:
@@ -62,3 +63,18 @@ I guess option 2 is better
 
 -   find library node cron
 -   in production maybe not by node
+
+
+## docker
+### postgres db
+```bash
+docker run --name pg_domain -e POSTGRES_PASSWORD=domain -p 5432:5432 -d postgres
+```
+### pgadmin
+```bash 
+docker run -p 8080:80 \            
+    -e 'PGADMIN_DEFAULT_EMAIL=a@a.com' \
+    -e 'PGADMIN_DEFAULT_PASSWORD=123456' \
+    -d dpage/pgadmin4
+
+```

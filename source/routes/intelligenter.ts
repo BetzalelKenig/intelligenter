@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.get('/get', controller.domainInfo);
 
-
+router.post('/post', controller.scanDomain)
 
 export = router;
