@@ -10,10 +10,11 @@ import sanityCheck from './routes/check';
 import domainInfo from './routes/intelligenter';
 const db = require('./db/initDB');
 
+// namespace for logs
 const NAMESPACE = 'Server';
 const router = express();
 
-//  connect to database();
+//  check connection to database;
 db.connection();
 
 /** Rules of our API */
@@ -45,4 +46,4 @@ router.use((req, res, next) => {
 
 const httpServer = http.createServer(router);
 
-httpServer.listen(config.SERVER.port, () => logging.info(NAMESPACE, `Server is running ${config.SERVER.hostname}:${config.SERVER.port}`));
+httpServer.listen(config.SERVER.port, () => logging.info(NAMESPACE, `Server is running on ${config.SERVER.hostname}:${config.SERVER.port}`));

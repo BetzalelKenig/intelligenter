@@ -36,8 +36,9 @@
 
 ## Database
 
-### Functions for db
+### Functions for
 
+-   create db and table if not exist
 -   insert domain
 -   check if domain exist
 -   update domain
@@ -64,17 +65,49 @@ I guess option 2 is better
 -   find library node cron
 -   in production maybe not by node
 
-
 ## docker
+
 ### postgres db
+
 ```bash
 docker run --name pg_domain -e POSTGRES_PASSWORD=domain -p 5432:5432 -d postgres
 ```
+
 ### pgadmin
-```bash 
-docker run -p 8080:80 \            
+
+```bash
+docker run -p 8080:80 \
     -e 'PGADMIN_DEFAULT_EMAIL=a@a.com' \
     -e 'PGADMIN_DEFAULT_PASSWORD=123456' \
     -d dpage/pgadmin4
+
+```
+
+## Tests
+
+```bash
+curl -X POST localhost:4000/post?domain=google.com
+```
+
+### upsert work
+```sql
+postgres=# INSERT INTO analysisdata(domain, whoisdata, lastupdate) VALUES('test1.com', 'whois data', '2019/04/09') ON CONFLICT (domain) DO UPDATE SET whoisdata = 'whois data', lastupdate = '2019/04/09';
+INSERT 0 1
+postgres=# select * from analysisdata;
+  domain   | vtdata | whoisdata  |     lastupdate      
+-----------+--------+------------+---------------------
+ test1.com |        | whois data | 2019-04-09 00:00:00
+(1 row)
+
+postgres=# INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES('test1.com', 'vt data', '2019/04/09') ON CONFLICT (domain) DO UPDATE SET vtdata = 'vt data', lastupdate = '2019/04/09';
+INSERT 0 1
+postgres=# select * from analysisdata;
+  domain   | vtdata  | whoisdata  |     lastupdate      
+-----------+---------+------------+---------------------
+ test1.com | vt data | whois data | 2019-04-09 00:00:00
+(1 row)
+
+
+
 
 ```

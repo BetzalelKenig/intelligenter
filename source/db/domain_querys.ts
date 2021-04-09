@@ -8,12 +8,12 @@ const dbQuery = (query: { text: string; values: string[] }) => {
     const client = new Client({
         connectionString
     });
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         client.connect();
 
-        client.query(query, (err: Error, res: Response) => {
+       await client.query(query, (err: Error, res: Response) => {
             if (err) {
-                console.log(err);
+                console.log('dbquery error=======',err);
                 reject(err);
             } else {
                 resolve(res);
@@ -28,18 +28,16 @@ const dbQuery = (query: { text: string; values: string[] }) => {
 
 const db = {
     addVTData: (domain: string, vtData: string) => {
-        const date = new Date().toJSON().slice(0, 10);
         const query = {
-            text: 'INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES($1, $2, $3) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = date',
-            values: [domain, vtData, date]
+            text: 'INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES($1, $2, $3) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = current_date',
+            values: [domain, vtData]
         };
         return dbQuery(query);
     },
-    addWhoisData: (domain: string, vtData: string) => {
-        const date = new Date().toJSON().slice(0, 10);
+    addWhoisData: (domain: string, whoisdata: string) => {
         const query = {
-            text: 'INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES($1, $2, $3) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = date',
-            values: [domain, vtData, date]
+            text: 'INSERT INTO analysisdata(domain, whoisdata, lastupdate) VALUES($1, $2, $3) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = current_date',
+            values: [domain, whoisdata]
         };
         return dbQuery(query);
     },
@@ -57,7 +55,13 @@ const db = {
         };
         return dbQuery(query);
     },
-    findOldUpdates: (domain: string) => {}
+    findOutdated: () => {
+        const query = {
+            text: "SELECT * FROM analysisdata WHERE lastupdate < (current_date - interval '1' month)",
+            values: []
+        };
+        return dbQuery(query)
+    }
 };
 
 export default db;
