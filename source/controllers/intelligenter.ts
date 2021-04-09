@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { analyzeDomain, isOnAnalysis } from '../services/analysis';
+import { analyzeDomain, isOnAnalysis , getDomainInfo} from '../services/analysis';
 import exstractDomain from '../services/validation';
 import db from '../db/domain_querys';
 
 // for GET request
-function getDomainInfo(req: Request, res: Response, next: NextFunction) {
+async function getInfo(req: Request, res: Response, next: NextFunction) {
     let domain = exstractDomain(req.query.domain as string);
     if (!domain) {
         return res.status(422).json({ message: 'no valid domain' });
@@ -12,11 +12,9 @@ function getDomainInfo(req: Request, res: Response, next: NextFunction) {
     if (isOnAnalysis(domain)) {
         return res.status(200).json({ domain, status: 'onAnalysis' });
     } else {
-        db.getDomainData(domain).then((data) => {
-            if (data) {
-                return res.status(200).json(data);
-            }
-        });
+        const result = await getDomainInfo(domain);        
+        return res.status(200).json(result);
+        
     }
     analyzeDomain(domain);
     return res.status(200).json({
@@ -37,4 +35,4 @@ const scanDomain = (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export default { getDomainInfo, scanDomain };
+export default { getInfo, scanDomain };

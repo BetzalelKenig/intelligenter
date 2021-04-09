@@ -1,6 +1,8 @@
 /**
  * Todo:
  * types
+ * get whois as json
+ * store relevent result
  */
 
 const nvt = require('node-virustotal');
@@ -51,7 +53,9 @@ async function whoisScan(domain: string) {
     });
 }
 
+
 export async function analyzeDomain(domain: string) {
+    /** this function need to call whoisScan & vtScan and restore the result in db */
     onAnalysis.push(domain);
 
     const whoisResult = await whoisScan(domain);
@@ -60,7 +64,7 @@ export async function analyzeDomain(domain: string) {
 }
 
 /**  */
-async function getDomainInfo(domain: string){
+export async function getDomainInfo(domain: string){
     if (isOnAnalysis(domain)) {
         return { domain, status: 'onAnalysis' };
     } else if (domain) return await db.getDomainData(domain);

@@ -62,7 +62,7 @@ const dbQueries = {
     },
     getDomainData: (domain: string) => {
         const query = {
-            text: 'SELECT * FROM analysisdata WHERE $1 = domain',
+            text: 'SELECT * FROM analysisdata WHERE domain = $1',
             values: [domain]
         };
         return dbQuery(query);
