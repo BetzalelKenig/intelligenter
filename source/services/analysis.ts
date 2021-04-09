@@ -6,7 +6,7 @@
  */
 
 const nvt = require('node-virustotal');
-const whois = require('whois');
+const whois = require('whois-json');
 import config from '../config/config';
 import logging from '../config/logging';
 import db from '../db/domain_querys';
@@ -23,7 +23,7 @@ export const isOnAnalysis = (domain: string): boolean => {
 
 // create node-virustotal object. the free api is limited for four requests in minute
 const defaultTimedInstance = nvt.makeAPI();
-const timedInstance = defaultTimedInstance.setKey(process.env.VTAPIKEY);
+const timedInstance = defaultTimedInstance.setKey(config.APIKEYS.vtKey);
 
 async function virustotalScan(domain: string) {
     return await new Promise((resolve, reject) => {
@@ -40,32 +40,32 @@ async function virustotalScan(domain: string) {
 }
 
 async function whoisScan(domain: string) {
-    return await new Promise((resolve, reject) => {
-        whois.lookup(domain, (err: any, data: any) => {
-            if (err) {
-                console.log('Well, crap.');
-                logging.error(NAMESPACE, err);
-                reject(err);
-            }
-
-            resolve({ whoisdata: data });
-        });
-    });
+    const whoisResult = await whois(domain);
+    db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
 }
 
-
 export async function analyzeDomain(domain: string) {
-    /** this function need to call whoisScan & vtScan and restore the result in db */
+    /** this function need to call whoisScan & vtScan and restore the result in db
+     * probably need promis to execut both scans async
+     */
     onAnalysis.push(domain);
 
     const whoisResult = await whoisScan(domain);
-    await db.addWhoisData(domain, JSON.stringify(whoisResult));
-    onAnalysis = onAnalysis.filter(value => value != domain)
+    db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
+    const vtdata = await virustotalScan(domain);
+
+    db.addVTData(domain, JSON.stringify(vtdata, null, 2));
+
+    onAnalysis = onAnalysis.filter((value) => value != domain);
 }
 
 /**  */
-export async function getDomainInfo(domain: string){
+export async function getDomainInfo(domain: string) {
     if (isOnAnalysis(domain)) {
         return { domain, status: 'onAnalysis' };
-    } else if (domain) return await db.getDomainData(domain);
-};
+    } else if (domain) {
+        let data = await db.getDomainData(domain);
+        data = data.rows[0];
+        return data;
+    }
+}

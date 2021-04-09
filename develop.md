@@ -73,6 +73,13 @@ I guess option 2 is better
 -   in production maybe not by node
 
 ## docker
+```bash
+└─$ docker ps    
+CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS                                            NAMES
+eff9d3eeb8f7        portainer/portainer-ce   "/portainer"             23 hours ago        Up 23 hours         0.0.0.0:8000->8000/tcp, 0.0.0.0:9000->9000/tcp   portainer
+9c66b53861b4        dpage/pgadmin4           "/entrypoint.sh"         24 hours ago        Up 24 hours         443/tcp, 0.0.0.0:8080->80/tcp                    intelligent_darwin
+c968d06f65e1        postgres                 "docker-entrypoint.s…"   24 hours ago        Up 24 hours         0.0.0.0:5432->5432/tcp                           pg_domain
+```
 
 ### postgres db
 
@@ -120,3 +127,4 @@ postgres=# select * from analysisdata;
 
 -   Planning Database according to requirements
 -   Mechanism for control the scheduler
+-   libraries vs implement myself consider pros & cons
