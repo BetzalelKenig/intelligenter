@@ -4,42 +4,54 @@ const { Pool, Client } = require('pg');
 import config from '../config/config';
 const connectionString = config.DB_URL;
 
-const dbQuery = (query: { text: string; values: string[] }) => {
+async function dbQuery(query: { text: string; values: string[] }) {
     const client = new Client({
         connectionString
     });
-    return new Promise(async (resolve, reject) => {
-        client.connect();
 
-       await client.query(query, (err: Error, res: Response) => {
-            if (err) {
-                console.log('dbquery error=======',err);
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
-    })
-        .catch((err) => {
-            console.log(err);
-        })
-        .finally(client.end());
-};
+    client.connect();
 
-const db = {
+    const result = await client.query(query);
+    client.end();
+    return result;
+}
+
+// const dbQuery = (query: { text: string; values: string[] }) => {
+//     const client = new Client({
+//         connectionString
+//     });
+//     return new Promise(async (resolve, reject) => {
+//         client.connect();
+
+//        await client.query(query, (err: Error, res: Response) => {
+//             if (err) {
+//                 console.log('dbquery error=======',err);
+//                 reject(err);
+//             } else {
+//                 resolve(res);
+//             }
+//         });
+//     })
+//         .catch((err) => {
+//             console.log(err);
+//         })
+//         .finally(client.end());
+// };
+
+const dbQueries = {
     addVTData: (domain: string, vtData: string) => {
         const query = {
-            text: 'INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES($1, $2, $3) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = current_date',
+            text: 'INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES($1, $2, current_date) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = current_date',
             values: [domain, vtData]
         };
-        return dbQuery(query);
+        dbQuery(query);
     },
     addWhoisData: (domain: string, whoisdata: string) => {
         const query = {
-            text: 'INSERT INTO analysisdata(domain, whoisdata, lastupdate) VALUES($1, $2, $3) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = current_date',
+            text: 'INSERT INTO analysisdata(domain, whoisdata, lastupdate) VALUES($1, $2, current_date) ON CONFLICT (domain) DO UPDATE SET vtData = $2, lastupdate = current_date',
             values: [domain, whoisdata]
         };
-        return dbQuery(query);
+        dbQuery(query);
     },
     isDomainInDB: (domain: string) => {
         const query = {
@@ -57,11 +69,11 @@ const db = {
     },
     findOutdated: () => {
         const query = {
-            text: "SELECT * FROM analysisdata WHERE lastupdate < (current_date - interval '1' month)",
+            text: "SELECT domain FROM analysisdata WHERE lastupdate < (current_date - interval '1' month)",
             values: []
         };
-        return dbQuery(query)
+        return dbQuery(query);
     }
 };
 
-export default db;
+export default dbQueries;

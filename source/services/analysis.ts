@@ -12,7 +12,7 @@ import db from '../db/domain_querys';
 const NAMESPACE = 'AnalysisService';
 
 /**Array for domains that on analysis*/
-const onAnalysis: string[] = [];
+let onAnalysis: string[] = [];
 
 /**check if domain is in onAnalysis array */
 export const isOnAnalysis = (domain: string): boolean => {
@@ -23,8 +23,8 @@ export const isOnAnalysis = (domain: string): boolean => {
 const defaultTimedInstance = nvt.makeAPI();
 const timedInstance = defaultTimedInstance.setKey(process.env.VTAPIKEY);
 
-const virustotalScan = (domain: string) => {
-    return new Promise((resolve, reject) => {
+async function virustotalScan(domain: string) {
+    return await new Promise((resolve, reject) => {
         timedInstance.domainLookup(domain, (err: any, res: any) => {
             if (err) {
                 console.log('Well, crap.');
@@ -35,10 +35,10 @@ const virustotalScan = (domain: string) => {
             resolve(JSON.parse(res));
         });
     });
-};
+}
 
-const whoisScan = (domain: string) => {
-    return new Promise((resolve, reject) => {
+async function whoisScan(domain: string) {
+    return await new Promise((resolve, reject) => {
         whois.lookup(domain, (err: any, data: any) => {
             if (err) {
                 console.log('Well, crap.');
@@ -49,23 +49,19 @@ const whoisScan = (domain: string) => {
             resolve({ whoisdata: data });
         });
     });
-};
+}
 
-export const analyzeDomain = (domain: string) => {
+export async function analyzeDomain(domain: string) {
     onAnalysis.push(domain);
 
-    whoisScan(domain)
-        .then((data) => {
-            db.addWhoisData(domain, data as string);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-};
+    const whoisResult = await whoisScan(domain);
+    await db.addWhoisData(domain, JSON.stringify(whoisResult));
+    onAnalysis = onAnalysis.filter(value => value != domain)
+}
 
 /**  */
-const getDomainInfo = (domain: string) => {
+async function getDomainInfo(domain: string){
     if (isOnAnalysis(domain)) {
         return { domain, status: 'onAnalysis' };
-    } else if (domain) return '';
+    } else if (domain) return await db.getDomainData(domain);
 };

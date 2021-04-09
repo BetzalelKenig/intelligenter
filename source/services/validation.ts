@@ -19,7 +19,7 @@ const exstractDomain = (url: string) => {
     hostname = hostname.split(':')[0];
     //find & remove "?"
     hostname = hostname.split('?')[0];
-    return hostname;
+    return hostname.toLowerCase();
 };
 
 export default exstractDomain;

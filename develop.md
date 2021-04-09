@@ -2,6 +2,13 @@
 
 ## Server
 
+#### Todo general
+
+-   fix export import
+-   check async
+-   error handling
+-   logs
+
 ### Validation
 
 -   maybe convert https://www.google.com/ to google.com?🤔
@@ -90,11 +97,12 @@ curl -X POST localhost:4000/post?domain=google.com
 ```
 
 ### upsert work
+
 ```sql
 postgres=# INSERT INTO analysisdata(domain, whoisdata, lastupdate) VALUES('test1.com', 'whois data', '2019/04/09') ON CONFLICT (domain) DO UPDATE SET whoisdata = 'whois data', lastupdate = '2019/04/09';
 INSERT 0 1
 postgres=# select * from analysisdata;
-  domain   | vtdata | whoisdata  |     lastupdate      
+  domain   | vtdata | whoisdata  |     lastupdate
 -----------+--------+------------+---------------------
  test1.com |        | whois data | 2019-04-09 00:00:00
 (1 row)
@@ -102,12 +110,13 @@ postgres=# select * from analysisdata;
 postgres=# INSERT INTO analysisdata(domain, vtdata, lastupdate) VALUES('test1.com', 'vt data', '2019/04/09') ON CONFLICT (domain) DO UPDATE SET vtdata = 'vt data', lastupdate = '2019/04/09';
 INSERT 0 1
 postgres=# select * from analysisdata;
-  domain   | vtdata  | whoisdata  |     lastupdate      
+  domain   | vtdata  | whoisdata  |     lastupdate
 -----------+---------+------------+---------------------
  test1.com | vt data | whois data | 2019-04-09 00:00:00
 (1 row)
-
-
-
-
 ```
+
+## For long-term
+
+-   Planning Database according to requirements
+-   Mechanism for control the scheduler

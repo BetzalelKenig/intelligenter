@@ -3,7 +3,8 @@ import { analyzeDomain, isOnAnalysis } from '../services/analysis';
 import exstractDomain from '../services/validation';
 import db from '../db/domain_querys';
 
-function domainInfo(req: Request, res: Response, next: NextFunction) {
+// for GET request
+function getDomainInfo(req: Request, res: Response, next: NextFunction) {
     let domain = exstractDomain(req.query.domain as string);
     if (!domain) {
         return res.status(422).json({ message: 'no valid domain' });
@@ -17,17 +18,23 @@ function domainInfo(req: Request, res: Response, next: NextFunction) {
             }
         });
     }
-    analyzeDomain(req.query.domain as string);
+    analyzeDomain(domain);
     return res.status(200).json({
-        domain: 'domain'
+        domain,
+        status: 'onAnalysis'
     });
 }
 
+// for POST method
 const scanDomain = (req: Request, res: Response, next: NextFunction) => {
     let domain = exstractDomain(req.query.domain as string);
 
-    analyzeDomain(req.query.domain as string);
-    return domain ? res.status(200).json({ domain, status: 'onAnalysis' }) : res.status(422).json({ message: 'no valid domain' });
+    if (domain) {
+        analyzeDomain(req.query.domain as string);
+        return res.status(200).json({ domain, status: 'onAnalysis' });
+    } else {
+        return res.status(422).json({ message: 'no valid domain' });
+    }
 };
 
-export default { domainInfo, scanDomain };
+export default { getDomainInfo, scanDomain };

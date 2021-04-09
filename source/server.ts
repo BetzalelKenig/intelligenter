@@ -8,6 +8,7 @@ import logging from './config/logging';
 import config from './config/config';
 import sanityCheck from './routes/check';
 import domainInfo from './routes/intelligenter';
+import dbQueries from './db/domain_querys';
 const db = require('./db/initDB');
 
 // namespace for logs
@@ -16,6 +17,14 @@ const router = express();
 
 //  check connection to database;
 db.connection();
+
+/**tamp test section */
+async function check() {
+    const outdated = await dbQueries.findOutdated();
+    console.log(outdated);
+}
+// check();
+/**end tamp test */
 
 /** Rules of our API */
 router.use((req, res, next) => {

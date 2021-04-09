@@ -3,7 +3,7 @@ import controller from '../controllers/intelligenter';
 
 const router = express.Router();
 
-router.get('/get', controller.domainInfo);
+router.get('/get', controller.getDomainInfo);
 
 router.post('/post', controller.scanDomain)
 
