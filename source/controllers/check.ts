@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-// import {createDatabase} from '../db/initDB'
 const db = require('../db/initDB');
 
 const sanityCheck = (req: Request, res: Response, next: NextFunction) => {

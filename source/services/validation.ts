@@ -15,6 +15,7 @@ const exstractDomain = (url: string) => {
     } else {
         hostname = url.split('/')[0];
     }
+    // Todo: remove www from domain
     //find & remove port number
     hostname = hostname.split(':')[0];
     //find & remove "?"

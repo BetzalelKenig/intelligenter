@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
-
+/**
+ * for run the server those values need to be on .env file
+ */
 dotenv.config();
 
 const SERVER_HOSTNAME = process.env.SERVER_HOSTNAME || 'localhost';

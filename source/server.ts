@@ -1,7 +1,6 @@
 /**
  * Todo: In prod change http to https
  */
-
 import http from 'http';
 import express from 'express';
 import logging from './config/logging';
@@ -14,6 +13,7 @@ import { scheduler } from './services/scheduler';
 
 // namespace for logs
 const NAMESPACE = 'Server';
+
 const router = express();
 
 //  check connection to database;
@@ -21,13 +21,8 @@ db.connection();
 
 
 /**tamp test section */
-async function check() {
-    const outdated = await dbQueries.findOutdated();
-    console.log(outdated);
-}
-// scheduler();
-// check();
-/**end tamp test */
+
+/**end tamp test section*/
 
 /** Rules of our API */
 router.use((req, res, next) => {
