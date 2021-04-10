@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { analyzeDomain, isOnAnalysis , getDomainInfo} from '../services/analysis';
+import { analyzeDomain, isOnAnalysis, getDomainInfo } from '../services/analysis';
 import exstractDomain from '../services/validation';
 import db from '../db/domain_querys';
 
@@ -11,16 +11,16 @@ async function getInfo(req: Request, res: Response, next: NextFunction) {
     }
     if (isOnAnalysis(domain)) {
         return res.status(200).json({ domain, status: 'onAnalysis' });
-    } else {
-        const result = await getDomainInfo(domain);        
+    } else if (db.isDomainInDB(domain)) {
+        const result = await getDomainInfo(domain);
         return res.status(200).json(result);
-        
+    } else {
+        analyzeDomain(domain);
+        return res.status(200).json({
+            domain,
+            status: 'onAnalysis'
+        });
     }
-    analyzeDomain(domain);
-    return res.status(200).json({
-        domain,
-        status: 'onAnalysis'
-    });
 }
 
 // for POST method

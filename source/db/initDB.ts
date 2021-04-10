@@ -18,20 +18,19 @@ module.exports = {
             client.end();
         });
     },
-
     /** Create the database and table */
     createDatabase: () => {
         const pool = new Pool({
             connectionString
         });
 
-        // pool.query('CREATE DATABASE domainanalysis;', (err: Error, res: Response) => {
-        //     console.log(err, res);
+        pool.query('CREATE DATABASE domainanalysis;', (err: Error, res: Response) => {
+            console.log(err, res);
 
-        // pool.query('CREATE TABLE analysisdata(domain text UNIQUE NOT NULL, stdata text, whoisdata text, lastupdate timestamp)', (err: Error, res: Response) => {
-        //     console.log(err, res);
-        //     pool.end();
-        // });
-        // });
+            pool.query('CREATE TABLE analysisdata(domain text UNIQUE NOT NULL, stdata text, whoisdata text, lastupdate timestamp)', (err: Error, res: Response) => {
+                console.log(err, res);
+                pool.end();
+            });
+        });
     }
 };

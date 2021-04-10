@@ -27,14 +27,14 @@ const timedInstance = defaultTimedInstance.setKey(config.APIKEYS.vtKey);
 
 async function virustotalScan(domain: string) {
     return await new Promise((resolve, reject) => {
-        timedInstance.domainLookup(domain, (err: any, res: any) => {
+        timedInstance.domainLookup(domain, (err: Error, res: Response) => {
             if (err) {
                 console.log('Well, crap.');
-                logging.error(NAMESPACE, err);
+                logging.error(NAMESPACE, `${err}`);
 
                 reject(err);
             }
-            resolve(JSON.parse(res));
+            resolve(res);
         });
     });
 }
@@ -54,8 +54,9 @@ export async function analyzeDomain(domain: string) {
         const whoisResult = await whoisScan(domain);
         db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
         const vtdata = await virustotalScan(domain);
+        console.log('vt  data json====', vtdata);
 
-        db.addVTData(domain, JSON.stringify(vtdata, null, 2));
+        db.addVTData(domain, JSON.stringify(vtdata));
     } catch (error) {
         logging.error(`[${NAMESPACE}]`, ` Error while analysis: ${error}`);
     }

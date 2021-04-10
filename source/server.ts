@@ -19,6 +19,7 @@ const router = express();
 //  check connection to database;
 db.connection();
 
+
 /**tamp test section */
 async function check() {
     const outdated = await dbQueries.findOutdated();
