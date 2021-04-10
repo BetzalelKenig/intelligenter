@@ -6,16 +6,20 @@ import config from '../config/config';
 const connectionString = config.DB_URL;
 
 async function dbQuery(query: { text: string; values: string[] }) {
-    const client = new Client({
-        connectionString
-    });
+    try {
+        const client = new Client({
+            connectionString
+        });
 
-    client.connect();
+        client.connect();
 
-    let result: QueryResult;
-    result = await client.query(query);
-    client.end();
-    return result;
+        let result: QueryResult;
+        result = await client.query(query);
+        client.end();
+        return result;
+    } catch (error) {
+        return error as QueryResult;
+    }
 }
 
 const dbQueries = {
@@ -33,12 +37,13 @@ const dbQueries = {
         };
         dbQuery(query);
     },
-    isDomainInDB: (domain: string) => {
+    isDomainInDB: async function (domain: string) {
         const query = {
-            text: 'SELECT exists(SELECT 1 FROM analysisdata WHERE $1)',
+            text: 'SELECT exists(SELECT 1 FROM analysisdata WHERE domain = $1)',
             values: [domain]
         };
-        return dbQuery(query);
+        const result = await dbQuery(query);
+        return result.rows[0].exists;
     },
     getDomainData: (domain: string) => {
         const query = {

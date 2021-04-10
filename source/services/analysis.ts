@@ -29,7 +29,7 @@ async function virustotalScan(domain: string) {
     return await new Promise((resolve, reject) => {
         timedInstance.domainLookup(domain, (err: Error, res: Response) => {
             if (err) {
-                console.log('Well, crap.');
+                console.error('Well, crap.');
                 logging.error(NAMESPACE, `${err}`);
 
                 reject(err);
@@ -54,7 +54,6 @@ export async function analyzeDomain(domain: string) {
         const whoisResult = await whoisScan(domain);
         db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
         const vtdata = await virustotalScan(domain);
-        console.log('vt  data json====', vtdata);
 
         db.addVTData(domain, JSON.stringify(vtdata));
     } catch (error) {
