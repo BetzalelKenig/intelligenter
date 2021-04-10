@@ -1,6 +1,7 @@
 /** querys  for the domain table */
 
 const { Pool, Client } = require('pg');
+import { QueryResult } from 'pg';
 import config from '../config/config';
 const connectionString = config.DB_URL;
 
@@ -11,32 +12,11 @@ async function dbQuery(query: { text: string; values: string[] }) {
 
     client.connect();
 
-    const result = await client.query(query);
+    let result: QueryResult;
+    result = await client.query(query);
     client.end();
     return result;
 }
-
-// const dbQuery = (query: { text: string; values: string[] }) => {
-//     const client = new Client({
-//         connectionString
-//     });
-//     return new Promise(async (resolve, reject) => {
-//         client.connect();
-
-//        await client.query(query, (err: Error, res: Response) => {
-//             if (err) {
-//                 console.log('dbquery error=======',err);
-//                 reject(err);
-//             } else {
-//                 resolve(res);
-//             }
-//         });
-//     })
-//         .catch((err) => {
-//             console.log(err);
-//         })
-//         .finally(client.end());
-// };
 
 const dbQueries = {
     addVTData: (domain: string, vtData: string) => {

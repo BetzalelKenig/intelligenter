@@ -10,6 +10,7 @@ import sanityCheck from './routes/check';
 import domainInfo from './routes/intelligenter';
 import dbQueries from './db/domain_querys';
 const db = require('./db/initDB');
+import { scheduler } from './services/scheduler';
 
 // namespace for logs
 const NAMESPACE = 'Server';
@@ -23,6 +24,7 @@ async function check() {
     const outdated = await dbQueries.findOutdated();
     console.log(outdated);
 }
+// scheduler();
 // check();
 /**end tamp test */
 
@@ -56,3 +58,6 @@ router.use((req, res, next) => {
 const httpServer = http.createServer(router);
 
 httpServer.listen(config.SERVER.port, () => logging.info(NAMESPACE, `Server is running on ${config.SERVER.hostname}:${config.SERVER.port}`));
+
+// scheduler for keep data up to date
+scheduler();

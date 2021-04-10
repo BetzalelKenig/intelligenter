@@ -44,17 +44,21 @@ async function whoisScan(domain: string) {
     db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
 }
 
+// Todo: replace await with promiss for start whois & vt in parallel
 export async function analyzeDomain(domain: string) {
     /** this function need to call whoisScan & vtScan and restore the result in db
      * probably need promis to execut both scans async
      */
     onAnalysis.push(domain);
+    try {
+        const whoisResult = await whoisScan(domain);
+        db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
+        const vtdata = await virustotalScan(domain);
 
-    const whoisResult = await whoisScan(domain);
-    db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
-    const vtdata = await virustotalScan(domain);
-
-    db.addVTData(domain, JSON.stringify(vtdata, null, 2));
+        db.addVTData(domain, JSON.stringify(vtdata, null, 2));
+    } catch (error) {
+        logging.error(`[${NAMESPACE}]`, ` Error while analysis: ${error}`);
+    }
 
     onAnalysis = onAnalysis.filter((value) => value != domain);
 }
