@@ -13,6 +13,10 @@ cd intelligenter && npm install
 ### DB postgres on docker
 
 ```bash
+docker run --name pg_domain -e POSTGRES_PASSWORD=domain -p 5432:5432 -d postgres
+```
+#### Pgadmin
+```bash
 docker run -p 8080:80 \
    -e 'PGADMIN_DEFAULT_EMAIL=a@a.com' \
    -e 'PGADMIN_DEFAULT_PASSWORD=123456' \
