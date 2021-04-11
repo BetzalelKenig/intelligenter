@@ -1,17 +1,26 @@
 /**
  * Todo:
  * types
- * get whois as json
+ * 
  * store relevent result
  */
 
 const nvt = require('node-virustotal');
 const whois = require('whois-json');
+import { VirusTotalInterface } from '../../virusTotal.model.';
 import config from '../config/config';
 import logging from '../config/logging';
 import db from '../db/domain_querys';
 
 const NAMESPACE = 'AnalysisService';
+
+interface VirusTotalResponse {
+    data: {
+        attributes: {
+            last_dns_records: [];
+        };
+    };
+}
 
 /**Array for domains that on analysis*/
 let onAnalysis: string[] = [];
@@ -25,16 +34,16 @@ export const isOnAnalysis = (domain: string): boolean => {
 const defaultTimedInstance = nvt.makeAPI();
 const timedInstance = defaultTimedInstance.setKey(config.APIKEYS.vtKey);
 
-async function virustotalScan(domain: string) {
-    return await new Promise((resolve, reject) => {
-        timedInstance.domainLookup(domain, (err: Error, res: Response) => {
+function virustotalScan(domain: string): Promise<VirusTotalInterface> {
+    return new Promise((resolve, reject) => {
+        timedInstance.domainLookup(domain, (err: Error, res: string) => {
             if (err) {
                 console.error('Well, crap.');
                 logging.error(NAMESPACE, `${err}`);
 
                 reject(err);
             }
-            resolve(res);
+            resolve(JSON.parse(res));
         });
     });
 }
@@ -50,17 +59,25 @@ export async function analyzeDomain(domain: string) {
      * probably need promis to execut both scans async
      */
     onAnalysis.push(domain);
-    try {
-        const whoisResult = await whoisScan(domain);
-        db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
-        const vtdata = await virustotalScan(domain); //Todo: parse the virustotal response
 
-        db.addVTData(domain, JSON.stringify(vtdata));
+    try {
+        let a = whoisScan(domain).then((wr) => {
+            db.addWhoisData(domain, JSON.stringify(wr, null, 2));
+        });
+
+        let b = virustotalScan(domain).then((vtr) => {
+            db.addVTData(domain, JSON.stringify(vtr.data.attributes.last_analysis_results));
+        });
+
+        Promise.all([a, b]).then((x) => {
+            onAnalysis = onAnalysis.filter((value) => value != domain);
+        });
+
+
     } catch (error) {
         logging.error(`[${NAMESPACE}]`, ` Error while analysis: ${error}`);
+        onAnalysis = onAnalysis.filter((value) => value != domain);
     }
-
-    onAnalysis = onAnalysis.filter((value) => value != domain);
 }
 
 /**  */

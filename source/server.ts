@@ -20,10 +20,6 @@ const router = express();
 db.connection();
 
 
-/**tamp test section */
-
-/**end tamp test section*/
-
 /** Rules of our API */
 router.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*'); //⛔ in prod '*' need to be replace with allwed ip's
