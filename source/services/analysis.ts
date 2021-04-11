@@ -53,7 +53,7 @@ export async function analyzeDomain(domain: string) {
     try {
         const whoisResult = await whoisScan(domain);
         db.addWhoisData(domain, JSON.stringify(whoisResult, null, 2));
-        const vtdata = await virustotalScan(domain);
+        const vtdata = await virustotalScan(domain); //Todo: parse the virustotal response
 
         db.addVTData(domain, JSON.stringify(vtdata));
     } catch (error) {
